@@ -34,6 +34,8 @@ MemGuard runs all of them together, deduplicates the results, and sends each bug
 
 The real trick is **MemHint** - a neuro-symbolic pipeline that discovers your project's custom allocators (the ones Infer doesn't know about) by combining an LLM with a Z3 theorem prover. The LLM reads your code and guesses which functions allocate memory. Z3 mathematically verifies whether that's actually true. The validated results get injected into Infer so it can find bugs through your custom wrappers that it would otherwise miss completely.
 
+
+
 ---
 
 ## Quick start
@@ -95,6 +97,21 @@ You don't need all of them installed. MemGuard uses whatever's available and ski
 ## Features
 
 ### MemHint — Neuro-symbolic custom allocator discovery
+
+MemGuard incorporates and adapts the **MEMHINT** methodology introduced by Huang et al. in:
+
+> Huihui Huang, Jieke Shi, Bo Wang, Zhou Yang, and David Lo.  
+> **"Finding Memory Leaks in C/C++ Programs via Neuro-Symbolic Augmented Static Analysis."**  
+> arXiv:2603.27224, 2026.
+
+**Original MEMHINT work:**
+
+- Paper: https://arxiv.org/abs/2603.27224
+- Original repository: https://github.com/jiekeshi/MemHint
+
+We acknowledge and thank the authors of MEMHINT for the methodology that inspired and informed MemGuard's MemHint component.
+
+**How is Memhint used here:**
 
 Your project probably has functions like `create_request()` or `pool_alloc()` that wrap malloc. Static analyzers don't know about them, so they miss every leak through those wrappers.
 
@@ -299,7 +316,10 @@ Full documentation is in the `https://memory-analyzer.github.io`
  
 MemGuard would not exist without the tools it orchestrates. It is an
 integration and analysis layer on top of the work of these projects:
- 
+
+- **MEMHINT** - Huihui Huang, Jieke Shi, Bo Wang, Zhou Yang, and David Lo, *Finding Memory Leaks in C/C++ Programs via Neuro-Symbolic Augmented Static Analysis*. We acknowledge the MEMHINT methodology for neuro-symbolic custom memory-management function discovery and validation, which we adapted and integrated into MemGuard's MemHint component.
+  - Paper: https://arxiv.org/abs/2603.27224
+  - Repository: https://github.com/jiekeshi/MemHint
 - [Valgrind](https://valgrind.org) and Helgrind - the Valgrind Developers
 - [Google Sanitizers](https://github.com/google/sanitizers) (ASan, LSan, MSan, UBSan, TSan) - Google
 - [heaptrack](https://github.com/KDE/heaptrack) - KDE
