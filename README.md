@@ -295,6 +295,27 @@ Full documentation is in the `https://memory-analyzer.github.io`
 
 ---
 
+## Acknowledgments
+ 
+MemGuard would not exist without the tools it orchestrates. It is an
+integration and analysis layer on top of the work of these projects:
+ 
+- [Valgrind](https://valgrind.org) and Helgrind - the Valgrind Developers
+- [Google Sanitizers](https://github.com/google/sanitizers) (ASan, LSan, MSan, UBSan, TSan) - Google
+- [heaptrack](https://github.com/KDE/heaptrack) - KDE
+- [rr](https://github.com/rr-debugger/rr) - Mozilla / rr-debugger contributors
+- [Facebook Infer](https://github.com/facebook/infer) - Meta
+- [cppcheck](https://github.com/danmar/cppcheck) - Daniel Marjamäki and contributors
+- [clang-tidy](https://clang.llvm.org/extra/clang-tidy/) - the LLVM Project
+- [memray](https://github.com/bloomberg/memray) - Bloomberg
+- [Miri](https://github.com/rust-lang/miri) - the Rust Project
+- [Z3](https://github.com/Z3Prover/z3) - Microsoft Research
+- [tree-sitter](https://github.com/tree-sitter/tree-sitter) - Max Brunsfeld and contributors
+- [Ollama](https://github.com/ollama/ollama) - Ollama
+- [Qwen Models](https://github.com/QwenLM/) - Alibaba Qwen Team
+ 
+---
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
