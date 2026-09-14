@@ -453,7 +453,10 @@
         body: JSON.stringify({ message: msg, model: 'auto' })
       });
       var d = await r.json();
-      var rendered = renderMarkdown(d.response || 'No response');
+      if (!r.ok) {
+        throw new Error((d && d.detail) ? d.detail : ('HTTP ' + r.status));
+      }
+      var rendered = renderMarkdown((d && d.response) ? d.response : 'No response');
       document.getElementById(aiBubbleId).querySelector('span:last-child').innerHTML = rendered;
     } catch (e) {
       document.getElementById(aiBubbleId).querySelector('span:last-child').textContent = 'Error: ' + e.message;
