@@ -138,13 +138,54 @@ async def get_visualization(scan_id: str):
 
 @app.post("/scans/{scan_id}/errors/{error_id}/chat")
 async def chat_about_error(scan_id: str, error_id: str, req: ChatRequest):
+    from ..ai.client import complete, best_available_model
+
     result = load_result(scan_id)
     if not result:
-        raise HTTPException(404)
+        raise HTTPException(404, "Scan not found")
     err      = next((e for e in result.errors if e.id == error_id), None)
     analysis = next((a for a in result.analyses if a.error_id == error_id), None)
-    if not err or not analysis:
-        raise HTTPException(404)
+    if not err:
+        raise HTTPException(404, "Error not found")
+
+    model = req.model
+    if not model or model == "auto":
+        model = await best_available_model()
+
+    context_parts = [
+        f"Bug type: {err.bug_type.value}",
+        f"Severity: {err.severity.value}",
+        f"Message: {err.message}",
+    ]
+    if err.primary_location:
+        loc = err.primary_location
+        context_parts.append(f"Location: {loc.file}:{loc.line}")
+    if analysis:
+        context_parts.append(f"Root cause: {analysis.root_cause}")
+        context_parts.append(f"Explanation: {analysis.explanation}")
+        if analysis.fixes:
+            context_parts.append(f"Suggested fix: {analysis.fixes[0].description}")
+
+    system_prompt = (
+        "You are a memory-safety expert helping a developer understand a "
+        "specific bug that MemGuard already detected and analyzed. Use the "
+        "context below to answer the developer's question directly and "
+        "concisely. Do not repeat the full context back to them.\n\n"
+        + "\n".join(context_parts)
+    )
+
+    try:
+        response_text = await complete(
+            messages=[{"role": "user", "content": req.message}],
+            model=model,
+            system=system_prompt,
+            temperature=0.2,
+        )
+    except Exception as e:
+        log.error("Chat completion failed: %s", e)
+        raise HTTPException(500, f"AI chat failed: {e}")
+
+    return {"response": response_text, "model": model}
 
 
 @app.post("/scans/{scan_id}/errors/{error_id}/ai-debug")
